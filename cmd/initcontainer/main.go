@@ -58,7 +58,10 @@ func main() {
 	getGameServerNameNamespaceFromEnv()
 	logger = log.WithFields(log.Fields{"GameServerName": sessionHostId, "GameServerNamespace": crdNamespace})
 
-	getRestEnvVariables()
+	getGsdkEnvVariables()
+
+	err := createGsdkFolders()
+	handleError(err)
 
 	gamePorts, gamePortConfiguration, err := parsePorts()
 	if err != nil {
@@ -166,17 +169,17 @@ func checkEnvOrFatal(envName string, envValue string) {
 func getGameServerNameNamespaceFromEnv() {
 	sessionHostId = os.Getenv("PF_GAMESERVER_NAME")
 	if sessionHostId == "" {
-		panic("PF_GAMESERVER_NAME is empty")
+		handleError(errors.New("PF_GAMESERVER_NAME is empty"))
 	}
 
 	crdNamespace = os.Getenv("PF_GAMESERVER_NAMESPACE")
 	if crdNamespace == "" {
-		panic("PF_GAMESERVER_NAMESPACE is empty")
+		handleError(errors.New("PF_GAMESERVER_NAMESPACE is empty"))
 	}
 }
 
-// getRestEnvVariables gets the rest environment variables
-func getRestEnvVariables() {
+// getGsdkEnvVariables gets the GSDK environment variables
+func getGsdkEnvVariables() {
 	heartbeatEndpointPort = os.Getenv("HEARTBEAT_ENDPOINT_PORT")
 	checkEnvOrFatal("HEARTBEAT_ENDPOINT_PORT", heartbeatEndpointPort)
 
@@ -200,4 +203,25 @@ func getRestEnvVariables() {
 
 	nodeInternalIP = os.Getenv("PF_NODE_INTERNAL_IP")
 	checkEnvOrFatal("PF_NODE_INTERNAL_IP", nodeInternalIP)
+}
+
+// createFolderIfNotExists creates the folder if it does not exist
+func createFolderIfNotExists(path string) error {
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// createGsdkFolders creates the folders for the GSDK related methods
+func createGsdkFolders() error {
+	// for the time being, we create only the server log folder
+	err := createFolderIfNotExists(serverLogPath)
+	if err != nil {
+		return err
+	}
+	return nil
 }
