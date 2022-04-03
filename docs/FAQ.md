@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Frequently Asked Questions
+title: 자주 묻는 질문
 nav_order: 13
 ---
 
-# Frequently Asked Questions
+# 자주 묻는 질문
 
-## Can I run a Unity or Unreal game server on Thundernetes?
+## Unity 또는 Unreal 게임 서버를 Thundernetes에서 실행할 수 있습니까?
 
-You can run any game server that supports the [PlayFab GameServer SDK](https://github.com/PlayFab/gsdk). Check a Unity sample [here](https://github.com/PlayFab/thundernetes/tree/main/samples/unity/README.md) and documentation for the Unreal plugin [here](https://github.com/PlayFab/gsdk/tree/main/UnrealPlugin). On [this](https://github.com/PlayFab/MpsSamples) repository you can find samples for all programming languages GSDK supports, like C#/Java/C++/Go/Unity/Unreal.
+[PlayFab GameServer SDK](https://github.com/PlayFab/gsdk)에서 지원하는 모든 게임 서버를 실행할 수 있습니다. Unity 샘플은 [여기](https://github.com/PlayFab/thundernetes/tree/main/samples/unity/README.md)에서 확인할 수 있으며, Unreal 플러그인에 대한 문서는 [여기](https://github.com/PlayFab/gsdk/tree/main/UnrealPlugin)에서 보실 수 있습니다. [이 저장소](https://github.com/PlayFab/MpsSamples)에는 C#/Java/C++/Go/Unity/Unreal와 같이 GSDK가 지원하는 모든 프로그래밍 언어에 대한 샘플을 찾을 수 있습니다.
 
 ## How can I add custom Annotations and/or Labels to my GameServer Pods?
 

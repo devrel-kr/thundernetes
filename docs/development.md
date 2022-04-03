@@ -1,39 +1,39 @@
 ---
 layout: default
-title: Development
+title: 개발
 nav_order: 12
 ---
 
-# Development
+# 개발
 
-This document contains development notes and tips for working with Thundernetes source code.
+이 문서에는 Thundernetes 소스 코드 작업을 위한 개발 노트와 팁이 포함되어 있습니다.
 
-## Release new Thundernetes version
+## 새로운 Thundernetes 버전 릴리스하기
 
-This will require 2 PRs.
+2개 PR을 필요로합니다.
 
-- Make sure you update `.versions` file on the root of this repository with the new version
-- Run `make clean` to ensure any cached artifacts of old builds are deleted.
-- Push and merge
-- Manually run the GitHub Actions workflow [here](https://github.com/PlayFab/thundernetes/actions/workflows/publish.yml) to create the new images
-- Git pull the latest changes from the main branch
-- Run `make create-install-files` to generate the operator install files
-- Replace the image on the [netcore-sample YAML files](https://github.com/PlayFab/thundernetes/samples/netcore)
-- Push and merge
+- 이 저장소의 루트에있는 `.versions` 파일을 새 버전으로 업데이트했는지 확인하십시오.
+- `make clean` 을 실행하여 이전 빌드의 캐시 된 아티팩트가 삭제되었는지 확인하십시오.
+- 푸시 및 머지
+- 새로운 이미지를 만들기 위해 수동으로 GitHub Actions 워크플로 [여기](https://github.com/PlayFab/thundernetes/actions/workflows/publish.yml)를 실행합니다.
+- main 브랜치에서 최신 변경 사항을 가져옵니다.
+- `make create-install-files` 를 실행하여 운영자 설치 파일을 생성합니다.
+- [netcore-sample YAML 파일](https://github.com/PlayFab/thundernetes/samples/netcore)에 대한 이미지 변경합니다.
+- 푸시 및 머지
 
-## Metrics
+## 메트릭
 
-- If you are using Prometheus and Prometheus operator, uncomment all sections with `# [PROMETHEUS]` on `config/default/kustomization.yaml` file. More details [here](https://book.kubebuilder.io/reference/metrics.html)
-- To enable authentication for the metrics server, remove the comment from this line on the file ``config/default/kustomization.yaml`: `- manager_auth_proxy_patch.yaml`
+- Prometheus 및 Prometheus operator를 사용하는 경우 `config/default/kustomization.yaml` 파일에서 `# [PROMETHEUS]`로 모든 섹션의 주석 처리를 제거합니다. 자세한 내용은 [여기](https://book.kubebuilder.io/reference/metrics.html)를 참고합니다.
+- 메트릭 서버에 대한 인증을 활성화하려면 ``config/default/kustomization.yaml` 파일의 이 줄에서 주석을 제거합니다: `- manager_auth_proxy_patch.yaml`
 
-## Running end to end tests on macOS
+## macOS에서 엔드 투 엔드 테스트 실행하기
 
-First of all, end to end tests require `envsubst` utility, assuming that you have Homebrew installed you can get it via `brew install gettext && brew link --force gettext`.
-We assume that you have installed Go, then you should install kind with `go install sigs.k8s.io/kind@latest`. Kind will be installed in `$(go env GOPATH)/bin` directory. Then, you should move kind to the `<projectRoot>/operator/testbin/bin/` folder with a command like `cp $(go env GOPATH)/bin/kind ./operator/testbin/bin/kind`. You can run end to end tests with `make builddockerlocal createkindcluster e2elocal`.
+먼저, 엔드투엔드 테스트는 `envsubst` 유틸리티가 필요하며, `brew install gettext && brew link --force gettext`를 실행 가능한 Homebrew가 설치되어 있다고 가정합니다. 
+Go를 설치했다고 가정하며, 이때 `go install sigs.k8s.io/kind@latest`로 kind를 설치해야 합니다. Kind는 `$(go env GOPATH)/bin` 디렉터리에 설치됩니다. 이때 `cp $(go env GOPATH)/bin/kind ./operator/testbin/bin/kind` 같은 명령이 있는 `<projectRoot>/operator/testbin/bin/` 폴더로 kind를 이동시켜야 합니다. `make builddockerlocal createkindcluster e2elocal`로 엔드 투 엔드 테스트를 실행할 수 있습니다.
 
-## Various scripts
+## 다양한 스트립트
 
-### Generate cert for testing
+### 테스팅을 위한 인증서 생성하기
 
 ```
 openssl genrsa 2048 > private.pem
@@ -42,25 +42,25 @@ kubectl create namespace thundernetes-system
 kubectl create secret tls tls-secret -n thundernetes-system --cert=public.pem --key=private.pem
 ```
 
-### Allocate a game server
+### 게임 서버 할당하기
 
-#### With TLS auth
+#### TLS auth와 작업하기
 
 ```bash
 IP=$(kubectl get svc -n thundernetes-system thundernetes-controller-manager -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 curl --key ~/private.pem --cert ~/public.pem --insecure -H 'Content-Type: application/json' -d '{"buildID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5","sessionID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5"}' https://${IP}:5000/api/v1/allocate
 ```
 
-#### Without TLS auth
+#### TLS auth 없이 (작업하기)
 
 ```bash
 IP=$(kubectl get svc -n thundernetes-system thundernetes-controller-manager -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 curl -H 'Content-Type: application/json' -d '{"buildID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5","sessionID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5"}' http://${IP}:5000/api/v1/allocate
 ```
 
-### Do 50 allocations
+### 50개 할당 작업
 
-#### Without TLS auth
+#### TLS auth 없이
 
 ```bash
 IP=$(kubectl get svc -n thundernetes-system thundernetes-controller-manager -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -74,22 +74,22 @@ IP=$(kubectl get svc -n thundernetes-system thundernetes-controller-manager -o j
 for i in {1..50}; do SESSION_ID=$(uuidgen); curl --key ~/private.pem --cert ~/public.pem --insecure -H 'Content-Type: application/json' -d '{"buildID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f6","sessionID":"'${SESSION_ID}'"}' https://${IP}:5000/api/v1/allocate; done
 ```
 
-## Run end to end tests locally
+## 엔드 투 엔드 테스트를 로컬에서 실행하기
 
 ```bash
 make clean deletekindcluster builddockerlocal createkindcluster e2elocal
 ```
 
-## Run controller locally
+## 컨트롤러를 로컬에서 실행하기
 
 ```bash
 cd operator
 THUNDERNETES_INIT_CONTAINER_IMAGE=ghcr.io/playfab/thundernetes-initcontainer:0.2.0 go run main.go
 ```
 
-## [ADVANCED] Install thundernetes via cloning this repository
+## [고급] 해당 저장소를 클론하여 thundernetes 설치
 
-You should `git clone` this repository to your local machine. As soon as this is done, you can run the following command to install Thundernetes.
+로컬 컴퓨터에 이 리포지토리를 `git clone` 해야 합니다. 이것을 수행하는 즉시 다음과 같은 명령을 실행해서 Thundernetes를 설치할 수 있습니다.
 
 ```bash
 export TAG=0.0.2.0
@@ -100,23 +100,23 @@ IMG=ghcr.io/playfab/thundernetes-operator:${TAG} \
    make -C pkg/operator install deploy
 ```
 
-Note that this will install thundernetes without any security for the allocation API service. If you want to enable security for the allocation API service, you can should provide a certificate and key for the allocation API service.
+이렇게 하면 API 서비스에 대한 보안 없이 thundernetes가 설치된다는 것에 유의합니다. API 서비스를 위한 보안을 활성화하려는 경우 API 서비스를 위한 인증서와 키를 제공할 수 있어야 합니다.
 
-You can use OpenSSL to create a self-signed certificate and key (not recommended for production).
+OpenSSL을 사용해서 자체 서명 인증서와 키를 생성할 수 있습니다(프로덕션에는 권장되지 않음).
 
 ```bash
 openssl genrsa 2048 > private.pem
 openssl req -x509 -days 1000 -new -key private.pem -out public.pem
 ```
 
-Install the cert and key as a Kubernetes Secret in the same namespace as the operator.
+Operator와 같은 네임스페이스에서 Kubernetes Secret으로 인증서와 키를 설치합니다.
 
 ```bash
 kubectl create namespace thundernetes-system
 kubectl create secret tls tls-secret -n thundernetes-system --cert=public.pem --key=private.pem
 ```
 
-Then, you need to install the operator enabling TLS authentication for the allocation API service.
+이때 API 서비스를 위한 TLS 인증을 활성화하는 operator를 설치해야 합니다.
 
 ```bash
 export TAG=0.3.0
@@ -127,14 +127,14 @@ IMG=ghcr.io/playfab/thundernetes-operator:${TAG} \
    make -C pkg/operator install deploy
 ```
 
-As soon as this is done, you can run `kubectl -n thundernetes-system get pods` to verify that the operator pod is running. To run a demo gameserver, you can use the command:
+이것을 수행하는 즉시 `kubectl -n thundernetes-system get pods`를 실행해서 operator 파드가 실행되고 있는지 확인할 수 있습니다. 데모 게임 서버를 실행하기 위해 다음 명령을 사용할 수 있습니다.
 
 ```bash
 kubectl apply -f pkg/operator/config/samples/netcore.yaml
 ```
 
-This will create a GameServerBuild with 2 standingBy and 4 maximum gameservers.
-After a while, you will see your game servers.
+이렇게 하면 두 개의 standingBy와 4개의 최대 게임 서버가 있는 GameServerBuild가 생성됩니다.
+잠시 후에 게임 서버가 표시됩니다.
 
 ```bash
 kubectl get gameservers # or kubectl get gs
@@ -146,7 +146,7 @@ gameserverbuild-sample-apbjz   Healthy   StandingBy   52.183.89.4     80:24558
 gameserverbuild-sample-gqhrm   Healthy   StandingBy   52.183.88.255   80:10319
 ```
 
-and your GameServerBuild:
+그리고 GameServerBuild는 다음과 같습니다:
 
 ```bash
 kubectl get gameserverbuild # or kubectl get gsb
@@ -157,13 +157,13 @@ NAME                     ACTIVE   STANDBY   CRASHES   HEALTH
 gameserverbuild-sample   0        2         0         Healthy
 ```
 
-You can edit the number of standingBy and max by changing the values in the GameServerBuild.
+GameServerBuild의 값을 변경하여 StandingBy의 수와 최대값을 편집할 수 있습니다.
 
 ```bash
 kubectl edit gsb gameserverbuild-sample
 ```
 
-You can also use the allocation API. To get the Public IP, you can use the command:
+또한 할당 API를 사용할 수 있습니다. 공용 IP를 얻기 위해 다음 명령을 사용할 수 있습니다.
 
 ```bash
 kubectl get svc -n thundernetes-system thundernetes-controller-manager
@@ -174,23 +174,23 @@ NAME                              TYPE           CLUSTER-IP    EXTERNAL-IP    PO
 thundernetes-controller-manager   LoadBalancer   10.0.62.144   20.83.72.255   5000:32371/TCP   39m
 ```
 
-The External-Ip field is the Public IP of the LoadBalancer that we can use to call the allocation API.
+External-Ip 필드는 할당 API를 호출하는 데 사용할 수 있는 로드 밸런서의 공용 IP입니다.
 
-If you have configured your allocation API service with no security:
+보안 기능 없이 API 서비스를 구성했을 경우에는 다음과 같습니다.
 
 ```bash
 IP=...
 curl -H 'Content-Type: application/json' -d '{"buildID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5","sessionID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5"}' http://${IP}:5000/api/v1/allocate
 ```
 
-If you're using TLS authentication:
+TLS 인증을 사용하는 경우 다음과 같습니다.
 
 ```bash
 IP=...
 curl --key ~/private.pem --cert ~/public.pem --insecure -H 'Content-Type: application/json' -d '{"buildID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5","sessionID":"85ffe8da-c82f-4035-86c5-9d2b5f42d6f5"}' https://${IP}:5000/api/v1/allocate
 ```
 
-Then, you can see that the game server has successfully been allocated. 
+그러면, 게임 서버가 성공적으로 할당되었음을 확인할 수 있습니다. 
 
 ```bash
 kubectl get gameservers
@@ -203,21 +203,21 @@ gameserverbuild-sample-bmich   Healthy   Active       20.94.219.110   80:38208  
 gameserverbuild-sample-gqhrm   Healthy   StandingBy   52.183.88.255   80:10319
 ```
 
-On the allocated server, you can call the demo game server HTTP endpoint.
+할당된 서버에서 데모 게임 서버 HTTP 엔드포인트를 호출할 수 있습니다.
 
 ```bash
 curl 20.94.219.110:38208/hello
 ```
 
-You'll get a response like `Hello from <containerName>`.
+`Hello from <containerName>`과 같은 응답을 얻게 됩니다.
 
-Try calling the endpoint that will gracefully terminate the game server.
+게임 서버를 깔끔하게 종료하는 엔드포인트 호출을 시도합니다.
 
 ```bash
 curl 20.94.219.110:38208/hello/terminate
 ```
 
-We can see that the game server has been terminated. Since our GameServerBuild is configured with 2 standingBys, no other servers are created.
+게임 서버가 종료되었음을 확인할 수 있습니다. GameServerBuild는 두 개의 standingBy로 구성되기 때문에 다른 서버는 생성되지 않습니다.
 
 ```bash
 kubectl get gameservers
@@ -229,9 +229,9 @@ gameserverbuild-sample-apbjz   Healthy   StandingBy   52.183.89.4     80:24558
 gameserverbuild-sample-gqhrm   Healthy   StandingBy   52.183.88.255   80:10319
 ```
 
-## kubebuilder notes
+## kubebuilder 메모
 
-Project was bootstrapped using [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder) using the following commands:
+다음과 같은 명령을 사용하는 [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)를 사용해서 프로젝트가 부트스트랩되었습니다.
 
 ```bash
 kubebuilder init --domain playfab.com --repo github.com/playfab/thundernetes/pkg/operator
@@ -240,7 +240,7 @@ kubebuilder create api --group mps --version v1alpha1 --plural gameserverbuilds 
 kubebuilder create api --group mps --version v1alpha1 --plural gameserverdetails --kind GameServerDetail 
 ```
 
-## env variables sample
+## env 변수 샘플
 
 ```bash
 PUBLIC_IPV4_ADDRESS=20.184.250.154
@@ -262,17 +262,17 @@ _=/usr/bin/env
 
 ## Docker compose
 
-The docker-compose.yml file on the root of this repo was created to facilitate sidecar development.
+이 리포지토리 루트의 docker-compose.yml 파일은 사이드카 개발을 촉진하기 위해 생성되었습니다.
 
-## Test your changes to a cluster
+## 변경 사항을 클러스터에서 테스트하기
 
-To test your changes to thundernetes to a Kubernetes cluster, you can use the following steps:
+변경 사항을 Kubernetes 클러스터에 thundernetes로 테스트하기 위해서는, 다음 단계를 사용할 수 있습니다.
 
-- The Makefile on the root of the project contains a variable `NS` that points to the container registry that you use during development. So you'd need to either set the variable in your environment (`export NS=<your-container-registry>`) or set it before calling `make` (like `NS=<your-container-registry> make build push`).
-- Login to your container registry (`docker login`)
-- Run `make clean build push` to build the container images and push them to your container registry
-- Run `create-install-files-dev` to create the install files for the cluster
-- Checkout the `installfilesdev` folder for the generated install files. This file is included in .gitignore so it will never be committed.
-- Test your changes as required.
-- single command: `NS=docker.io/<repo>/ make clean build push create-install-files-dev`
+- 프로젝트의 루트에 있는 Makefile에는 개발 중에 사용하는 컨테이너 레지스트리를 가리키는 변수 `NS`가 포함되어 있습니다. 따라서 환경에서 변수를 설정하거나 (`export NS=<your-container-registry>`) `make` 를 호출하기 전에 변수를 설정해야 합니다 (예: `NS=<your-container-registry> make build push`).
+- 컨테이너 레지스트리에 로그인합니다 (`docker login`)
+- `make clean build push` 를 실행하여 컨테이너 이미지를 빌드하고 컨테이너 레지스트리로 푸시합니다.
+- `create-install-files-dev` 를 실행하여 클러스터에 대한 설치 파일을 만듭니다.
+- 생성 된 설치 파일의 `installfilesdev` 폴더를 체크 아웃하십시오. 이 파일은 .gitignore 에 포함되어 있으므로 커밋되지 않습니다.
+- 필요에 따라 변경 사항을 테스트합니다.
+- 단일 명령어: `NS=docker.io/<repo>/ make clean build push create-install-files-dev`
  
